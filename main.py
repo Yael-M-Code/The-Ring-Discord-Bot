@@ -1,9 +1,9 @@
 import discord
-import os # default module
+import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
-load_dotenv("token.env") # load all the variables from the env file
+load_dotenv("token.env")
 bot = discord.Bot(intents=discord.Intents.all())
 token = os.getenv("TOKEN")
 banlog = {}
@@ -157,7 +157,10 @@ async def user(ctx, member: discord.Member):
     embed.set_thumbnail(url=member.display_avatar.url)
     await ctx.respond(embed=embed)
 
-
+class Vue(discord.ui.View):
+    @discord.ui.button(label="Open a ticket", style=discord.ButtonStyle.orange, emoji="🧰")
+    async def ticket(self, button, interaction):
+        await 
 
 
 # Event Part
