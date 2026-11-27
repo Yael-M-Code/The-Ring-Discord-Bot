@@ -158,6 +158,23 @@ async def user(ctx, member: discord.Member):
     await ctx.respond(embed=embed)
 
 nbTicket = 0
+ticketChannel = discord.TextChannel
+
+class CloseTicket0(discord.ui.View):
+            def __init__(self):
+                super().__init__(timeout=None)
+            @discord.ui.button(label="Close the ticket", style=discord.ButtonStyle.red)
+            async def ticket(self, button, interaction):
+                await interaction.response.send_message("Are you sure you want to close the ticket ?", view=CloseTicket1(), ephemeral=True)
+
+class CloseTicket1(discord.ui.View):
+                    def __init__(self):
+                        super().__init__(timeout=None)
+                    @discord.ui.button(label="Last Step", style=discord.ButtonStyle.red)
+                    async def ticket(self, button, interaction):
+                        await ticketChannel.delete()
+        
+
 class Reason(discord.ui.Modal):
     def __init__(self):
         super().__init__(title="Opening a ticket...")
@@ -165,8 +182,11 @@ class Reason(discord.ui.Modal):
     async def callback(self, interaction):
         global nbTicket
         nbTicket += 1
-        await interaction.user.send(f"You opened a ticket because: {self.children[0].value}. If you want to close the ticket, go to the channel in the server (I ping you in this channel)")
-        await interaction.guild.create_text_channel(name=f"Ticket-{nbTicket}")
+        global ticketChannel
+        ticketChannel = await interaction.guild.create_text_channel(name=f"Ticket-{nbTicket}")
+        await interaction.user.send(f"You opened a ticket because: *{self.children[0].value}*. If you want to close the ticket, go to the channel in the server (<#{ticketChannel.id}>)")
+        await ticketChannel.send(f"<@{interaction.user.id}> created this ticket because: _**{self.children[0].value}**_, someone that can moderate ticket will help you soon, to close the ticket: `click the button`", view=CloseTicket0())
+                
 
 class TicketButton(discord.ui.View):
     def __init__(self):
