@@ -157,10 +157,28 @@ async def user(ctx, member: discord.Member):
     embed.set_thumbnail(url=member.display_avatar.url)
     await ctx.respond(embed=embed)
 
-class Vue(discord.ui.View):
-    @discord.ui.button(label="Open a ticket", style=discord.ButtonStyle.orange, emoji="🧰")
+nbTicket = 0
+class Reason(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title="Opening a ticket...")
+        self.add_item(discord.ui.InputText(label="Why are you wanting to open a ticket ?"))
+    async def callback(self, interaction):
+        global nbTicket
+        nbTicket += 1
+        await interaction.user.send(f"You opened a ticket because: {self.children[0].value}. If you want to close the ticket, go to the channel in the server (I ping you in this channel)")
+        await interaction.guild.create_text_channel(name=f"Ticket-{nbTicket}")
+
+class TicketButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(label="Open a ticket", style=discord.ButtonStyle.green, emoji="🧰")
     async def ticket(self, button, interaction):
-        await 
+        await interaction.response.send_modal(Reason())
+
+@bot.slash_command(name="embed_ticket", description="ADMIN ONLY, ONLY for the ticket room")
+async def user(ctx):
+    embed = discord.Embed(title="Create a ticket", color=discord.Color.orange())
+    await ctx.respond(view=TicketButton())
 
 
 # Event Part
